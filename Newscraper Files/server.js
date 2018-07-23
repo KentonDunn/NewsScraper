@@ -55,9 +55,9 @@ app.get("/scrape", function (req, res) {
             result.summary = $(element).find("p.summary").text().replace(/\\n+/g, '').trim();
 
             if (result.title && result.summary && result.link) {
-                db.Article.create(result)
-                    .then(function (dbArticle) {
-                        //console.log(dbArticle);
+                db.ScrapedData.create(result)
+                    .then(function (dbScrapedData) {
+                        console.log(dbScrapedData);
                     })
                     .catch(function (err) {
                         return res.json(err);
@@ -68,13 +68,14 @@ app.get("/scrape", function (req, res) {
 
     });
     res.send("Scrape Complete");
+    //send the screen back to index.html.  I tried res.send(index.html), but it didn't work
 
 });
 
-app.get("/articles", function (req, res) {
-    db.Article.find({})
-        .then(function (dbArticle) {
-            res.json(dbArticle);
+app.get("/scraped", function (req, res) {
+    db.ScrapedData.find({})
+        .then(function (dbScrapedData) {
+            res.json(dbScrapedData);
         })
         .catch(function (err) {
             res.json(err);

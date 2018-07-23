@@ -1,4 +1,4 @@
-$.getJSON("/articles", function (data) {
+$.getJSON("/scraped", function (data) {
     for (var i = 0; i < data.length; i++) {
         console.log(data);
         $(".article-container").append("<div data-id='" + data[i].id + "'class ='card'>" +
