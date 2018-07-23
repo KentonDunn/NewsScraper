@@ -33,7 +33,8 @@ console.log("\n******************\n" +
     "from newyorktimes.com:" +
     "\n******************************\n");
 
-
+//I don't know why when the page loads it's already showing scraped data
+//I tried to assign it to a button, but couldn't get it to work
 
 app.get("/", function (req, res) {
     res.send(index.html);
@@ -72,6 +73,18 @@ app.get("/scrape", function (req, res) {
 
 });
 
+//creating this database to hold saved articles from the user
+db.ArticleLibrary.create({
+        name: "Saved NYT User Articles"
+    })
+    .then(function (dbArticleLibrary) {
+        console.log(dbArticleLibrary);
+    })
+    .catch(function (err) {
+        console.log(err.message);
+    });
+
+//ScrapedData holds every article scraped from nytimes.com
 app.get("/scraped", function (req, res) {
     db.ScrapedData.find({})
         .then(function (dbScrapedData) {
@@ -81,6 +94,7 @@ app.get("/scraped", function (req, res) {
             res.json(err);
         });
 });
+
 
 app.get("/articles/:id", function (req, res) {
     db.Article.findOne({
@@ -113,6 +127,28 @@ app.post("/articles/:id", function (re, res) {
             res.json(err);
         });
 });
+
+/*this command will post the article's id into the articles array that 
+that ArticleLibrary reads from*/
+app.post("/articles", function (req, res) {
+    db.Article.create(req.body)
+        .then(function (dbArticle) {
+            return db.ArticleLibrary.findOneAndUpdate({}, {
+                $push: {
+                    articles: dbArticle._id
+                }
+            }, {
+                new: true
+            });
+        })
+        .then(function (dbArticleLibrary) {
+            res.json(dbArticleLibrary)
+        })
+        .catch(function (err) {
+            res.json(err);
+        });
+});
+
 
 
 app.listen(PORT, function () {

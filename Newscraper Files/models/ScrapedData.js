@@ -1,3 +1,5 @@
+//this database will hold all of the scraped articles from nytimes.com
+
 var mongoose = require("mongoose");
 
 var Schema = mongoose.Schema;
