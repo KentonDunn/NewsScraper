@@ -74,15 +74,15 @@ app.get("/scrape", function (req, res) {
 });
 
 //creating this database to hold saved articles from the user
-db.ArticleLibrary.create({
-        name: "Saved NYT User Articles"
-    })
-    .then(function (dbArticleLibrary) {
-        console.log(dbArticleLibrary);
-    })
-    .catch(function (err) {
-        console.log(err.message);
-    });
+// db.ArticleLibrary.create({
+//         name: "Saved NYT User Articles"
+//     })
+//     .then(function (dbArticleLibrary) {
+//         console.log(dbArticleLibrary);
+//     })
+//     .catch(function (err) {
+//         console.log(err.message);
+//     });
 
 //ScrapedData holds every article scraped from nytimes.com
 app.get("/scraped", function (req, res) {

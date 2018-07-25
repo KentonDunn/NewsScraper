@@ -1,7 +1,7 @@
    $.getJSON("/scraped", function (data) {
        $(".alert").hide();
        for (var i = 0; i < data.length; i++) {
-           if (i > 3) break
+           //if (i > 3) break
            console.log(data);
            $("#articleSpace").append("<div data-id='" + data[i].id + "'class ='card'>" +
                "<div class='card-header'>" +
