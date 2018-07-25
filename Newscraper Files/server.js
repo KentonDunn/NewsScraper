@@ -1,7 +1,6 @@
 var cheerio = require("cheerio");
 var request = require("request");
 var express = require("express");
-var mongojs = require("mongojs");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
 var axios = require("axios");
@@ -46,29 +45,36 @@ app.get("/scrape", function (req, res) {
     request("https://www.newyorktimes.com", function (error, response, html) {
         var $ = cheerio.load(html);
 
-        var result = {};
+        var articles = [];
 
         //this scrape works in some sections of the website and in others it returns undefined information
         //since it works for most, I'm going to stick with it. 
         $("article.theme-summary").each(function (i, element) {
+            if (i > 9) return;
+            var result = {};
             result.title = $(element).find("h2.story-heading").text().replace(/\\n+/g, '').trim();
             result.link = $(element).find("h2.story-heading").children().attr("href");
             result.summary = $(element).find("p.summary").text().replace(/\\n+/g, '').trim();
-
             if (result.title && result.summary && result.link) {
-                db.ScrapedData.create(result)
-                    .then(function (dbScrapedData) {
-                        console.log(dbScrapedData);
-                    })
-                    .catch(function (err) {
-                        return res.json(err);
-                    });
+                articles.push(result);
             }
         });
+            
+        
+        db.Article.insertMany(articles)
+            .then(function (dbArticles) {
+                console.log(dbArticles);
+                res.redirect("/");
+            })
+            .catch(function (err) {
+                res.redirect("/")
+                console.log(err)
+            });
+            
 
 
     });
-    res.send("Scrape Complete");
+    
     //send the screen back to index.html.  I tried res.send(index.html), but it didn't work
 
 });
@@ -86,9 +92,9 @@ app.get("/scrape", function (req, res) {
 
 //ScrapedData holds every article scraped from nytimes.com
 app.get("/scraped", function (req, res) {
-    db.ScrapedData.find({})
-        .then(function (dbScrapedData) {
-            res.json(dbScrapedData);
+    db.Article.find({})
+        .then(function (Articles) {
+            res.json(Articles);
         })
         .catch(function (err) {
             res.json(err);
@@ -101,8 +107,8 @@ app.get("/articles/:id", function (req, res) {
             _id: req.params.id
         })
         .populate("note")
-        .then(function (dbArticle) {
-            res.json(dbArticle);
+        .then(function (Article) {
+            res.json(Article);
         })
         .catch(function (err) {
             res.json(err);
@@ -145,7 +151,7 @@ app.post("/articles", function (req, res) {
             res.json(dbArticleLibrary)
         })
         .catch(function (err) {
-            res.json(err);
+           console.log(err)
         });
 });
 
