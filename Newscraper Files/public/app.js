@@ -15,8 +15,9 @@
        }
    });
 
+
    //save an article to the saved article database
-   $(document).on("click", ".save", function () {
+   $(".save").on("click", function () {
        var result = {};
 
        var thisID = $(this).attr("data-id");
